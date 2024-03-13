@@ -92,10 +92,6 @@ describe("TegroDEX", function () {
         await quoteToken.connect(addr1).approve(TegroDEXContract.target, ethers.MaxUint256);
         const receipt = await (TegroDEXContract.settleOrders(buyOrder, buySignature, sellOrder, sellSignature, quantity));
 
-        // Check final token balances
-        console.log("Address 1. Base Token balance:" + await baseToken.balanceOf(addr1.address) + " Quote Token balance:" + await quoteToken.balanceOf(addr1.address));
-        console.log("Address 2. Base Token balance:" + await baseToken.balanceOf(addr2.address) + " Quote Token balance:" + await quoteToken.balanceOf(addr2.address));
-
         const updatedBaseTokenBalance = await baseToken.balanceOf(addr1.address);
         const updatedQuoteTokenBalance = await quoteToken.balanceOf(addr2.address);
         expect(updatedBaseTokenBalance).to.equal(quantity);
@@ -125,10 +121,6 @@ describe("TegroDEX", function () {
         const receipt = await (TegroDEXContract.settleOrders(buyOrder, buySignature, sellOrder, sellSignature, quantity/2));
         const receipt2 = await (TegroDEXContract.settleOrders(buyOrder, buySignature, sellOrder2, sellSignature2, quantity/2));
         
-        // Check final token balances
-        console.log("Address 1. Base Token balance:" + await baseToken.balanceOf(addr1.address) + " Quote Token balance:" + await quoteToken.balanceOf(addr1.address));
-        console.log("Address 2. Base Token balance:" + await baseToken.balanceOf(addr2.address) + " Quote Token balance:" + await quoteToken.balanceOf(addr2.address));
-
         const updatedBaseTokenBalance = await baseToken.balanceOf(addr1.address);
         const updatedQuoteTokenBalance = await quoteToken.balanceOf(addr2.address);
         expect(updatedBaseTokenBalance).to.equal(quantity);

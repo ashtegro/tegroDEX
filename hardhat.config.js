@@ -5,7 +5,7 @@ require('dotenv').config();
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
   solidity: "0.8.22",
-  defaultNetwork: "optimismSepolia",
+  defaultNetwork: "polygon_mumbai",
   sourcify: {
     enabled: false
   },
