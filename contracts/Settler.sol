@@ -19,12 +19,19 @@ interface ITradingContract {
         Order memory buyOrder,
         bytes memory buySignature,
         Order memory sellOrder,
-        bytes memory sellSignature
+        bytes memory sellSignature,
+        uint256 matchingAmount
     ) external payable;
+
+    function hashOrder(Order memory order) external view returns (bytes32);
 }
 
 contract TegroDEXSettlement is Initializable, OwnableUpgradeable {
     ITradingContract public tradingContract;
+    event TradeFailed(
+        bytes32 indexed buyOrderHash,
+        bytes32 indexed sellOrderHash
+    );
 
     function initialize(
         address _owner,
@@ -38,10 +45,11 @@ contract TegroDEXSettlement is Initializable, OwnableUpgradeable {
         ITradingContract.Order[] memory buyOrders,
         bytes[] memory buySignatures,
         ITradingContract.Order[] memory sellOrders,
-        bytes[] memory sellSignatures
+        bytes[] memory sellSignatures,
+        uint256[] memory matchingAmounts
     ) external {
-        if (buyOrders.length != sellOrders.length) {
-            revert("Invalid order length");
+        if (buyOrders.length != sellOrders.length || buyOrders.length != matchingAmounts.length) {
+            revert("Invalid array lengths");
         }
 
         for (uint i = 0; i < buyOrders.length; i++) {
@@ -50,9 +58,15 @@ contract TegroDEXSettlement is Initializable, OwnableUpgradeable {
                     buyOrders[i],
                     buySignatures[i],
                     sellOrders[i],
-                    sellSignatures[i]
+                    sellSignatures[i],
+                    matchingAmounts[i]
                 )
-            {} catch (bytes memory reason) {}
+            {} catch (bytes memory) {
+                emit TradeFailed(
+                    tradingContract.hashOrder(buyOrders[i]),
+                    tradingContract.hashOrder(sellOrders[i])
+                );
+            }
         }
     }
 }
