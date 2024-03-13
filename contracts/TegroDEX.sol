@@ -75,11 +75,17 @@ contract TegroDEX is
         Order memory buyOrder,
         bytes memory buySignature,
         Order memory sellOrder,
-        bytes memory sellSignature
+        bytes memory sellSignature,
+        uint256 matchedAmount
     ) external nonReentrant {
         //Hash the orders based on EIP712
         bytes32 buyOrderHash = hashOrder(buyOrder);
         bytes32 sellOrderHash = hashOrder(sellOrder);
+
+        require(
+            buyOrder.isBuy == true && sellOrder.isBuy == false,
+            "Both orders cannot be of the same type (buy/sell)"
+        );
 
         //Require both orders to have the same base and quote tokens
         require(
@@ -102,21 +108,19 @@ contract TegroDEX is
         );
 
         //Auto calculate the matched amount based on how much is remaining
-        uint256 matchedQuantity = _calculateMatchedAmount(
+        _validateAndProcessMatchedAmount(
             buyOrderHash,
             sellOrderHash,
             buyOrder.totalQuantity,
-            sellOrder.totalQuantity
+            sellOrder.totalQuantity,
+            matchedAmount
         );
-
-        //Throw an error if orders are already filled
-        require(matchedQuantity > 0, "No valid amount to trade");
 
         //If all validations pass, transfer the tokens between the two parties
         _transferTokens(
             buyOrder,
             sellOrder,
-            matchedQuantity,
+            matchedAmount,
             buyOrderHash,
             sellOrderHash
         );
@@ -130,12 +134,13 @@ contract TegroDEX is
         return hash.recover(signature) == signer;
     }
 
-    function _calculateMatchedAmount(
+    function _validateAndProcessMatchedAmount(
         bytes32 buyOrderHash,
         bytes32 sellOrderHash,
         uint256 buyTotalQuantity,
-        uint256 sellTotalQuantity
-    ) internal returns (uint256) {
+        uint256 sellTotalQuantity,
+        uint256 matchedAmount
+    ) internal {
         uint256 buyRemaining = remaining[buyOrderHash];
         uint256 sellRemaining = remaining[sellOrderHash];
 
@@ -146,9 +151,12 @@ contract TegroDEX is
             sellRemaining = sellTotalQuantity + 1;
         }
 
-        uint256 matchedAmount = (
-            buyRemaining < sellRemaining ? buyRemaining : sellRemaining
-        ) - 1;
+        if (
+            matchedAmount > buyRemaining - 1 ||
+            matchedAmount > sellRemaining - 1
+        ) {
+            revert("Matched amount is greater than the remaining amount");
+        }
 
         if (buyRemaining > matchedAmount + 1) {
             remaining[buyOrderHash] = buyRemaining - matchedAmount;
@@ -161,7 +169,6 @@ contract TegroDEX is
         } else {
             remaining[sellOrderHash] = _ORDER_FILLED;
         }
-        return matchedAmount;
     }
 
     function _transferTokens(

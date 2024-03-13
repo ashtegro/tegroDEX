@@ -7,7 +7,7 @@ async function main() {
         await deployer.getAddress()
     );
 
-    const ownerAddress = ""; // Polygon mumbai address
+    const ownerAddress = "0x113128f65D830b5295cef847597F4655f3d8E47C"; // Polygon mumbai address
     const feeAmount = 100;
     const TegroContract = await ethers.getContractFactory("TegroDEX");
     const deployedContract = await upgrades.deployProxy(TegroContract, [ownerAddress, feeAmount]);
