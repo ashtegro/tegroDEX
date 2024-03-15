@@ -178,36 +178,58 @@ contract TegroDEX is
         bytes32 buyOrderHash,
         bytes32 sellOrderHash
     ) internal {
+        uint256 totalPrice = 0;
+        uint256 matchedPrice = 0;
         IERC20 baseToken = IERC20(buyOrder.baseToken);
         IERC20 quoteToken = IERC20(buyOrder.quoteToken);
 
-        uint8 baseDecimals = IERC20WithDecimals(buyOrder.baseToken).decimals();
-        uint8 quoteDecimals = IERC20WithDecimals(buyOrder.quoteToken)
-            .decimals();
+        {
+            uint8 baseDecimals = IERC20WithDecimals(buyOrder.baseToken)
+                .decimals();
+            uint8 quoteDecimals = IERC20WithDecimals(buyOrder.quoteToken)
+                .decimals();
 
-        uint256 matchedPrice = buyOrder.price < sellOrder.price
-            ? buyOrder.price
-            : sellOrder.price;
+            matchedPrice = buyOrder.price < sellOrder.price
+                ? buyOrder.price
+                : sellOrder.price;
 
-        uint256 totalPrice = calculateTotalPrice(
-            matchedPrice,
-            quoteDecimals,
-            matchedAmount,
-            baseDecimals
+            totalPrice = _calculateTotalPrice(
+                matchedPrice,
+                quoteDecimals,
+                matchedAmount,
+                baseDecimals
+            );
+
+            require(totalPrice > 0, "Total price needs to be greater than 0");
+        }
+
+        //Calculate fees
+        uint256 baseFeeAmount = (matchedAmount * feeAmount) / 10000;
+        uint256 quoteFeeAmount = (totalPrice * feeAmount) / 10000;
+
+        //Transfer fees first
+        baseToken.safeTransferFrom(
+            sellOrder.maker,
+            feeRecipient,
+            baseFeeAmount
         );
 
-        require(totalPrice > 0, "Total price needs to be greater than 0");
+        quoteToken.safeTransferFrom(
+            buyOrder.maker,
+            feeRecipient,
+            quoteFeeAmount
+        );
 
         baseToken.safeTransferFrom(
             sellOrder.maker,
             buyOrder.maker,
-            matchedAmount
+            matchedAmount - baseFeeAmount
         );
 
         quoteToken.safeTransferFrom(
             buyOrder.maker,
             sellOrder.maker,
-            totalPrice
+            totalPrice - quoteFeeAmount
         );
 
         emit OrderSettled(
@@ -219,21 +241,14 @@ contract TegroDEX is
             buyOrderHash,
             sellOrderHash
         );
-
-        //uint256 baseFeeAmount = (matchedAmount * feeAmount) / 10000;
-        //uint256 quoteFeeAmount = (totalPrice * feeAmount) / 10000;
-
-        // //Calculate fees and transfer the amount to the recipient
-        // baseToken.safeTransferFrom(buyOrder.maker, owner(), baseFeeAmount);
-        // quoteToken.safeTransferFrom(sellOrder.maker, owner(), quoteFeeAmount);
     }
 
-    function calculateTotalPrice(
+    function _calculateTotalPrice(
         uint256 price,
         uint8 quoteTokenDecimals,
         uint256 quantity,
         uint8 baseTokenDecimals
-    ) public pure returns (uint256) {
+    ) internal pure returns (uint256) {
         //First scale up the values to the highest decimals to ensure consistency in multiplication
         uint16 higherDecimal = baseTokenDecimals >= quoteTokenDecimals
             ? baseTokenDecimals
