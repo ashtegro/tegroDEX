@@ -8,7 +8,7 @@ describe("TegroDEX", function () {
     let network;
     const baseDecimals = 2;
     const quoteDecimals = 4;
-
+    const feeBps = 20;
 
     beforeEach(async function () {
         // Deploy an ERC20 token for testing
@@ -20,7 +20,7 @@ describe("TegroDEX", function () {
         TegroDEX = await ethers.getContractFactory("TegroDEX");
         [owner, addr1, addr2] = await ethers.getSigners();
         TegroDEXContract = await TegroDEX.deploy();
-        TegroDEXContract.initialize(owner.address, 100);
+        TegroDEXContract.initialize(owner.address, feeBps);
         network = await ethers.getDefaultProvider().getNetwork();
     });
 
@@ -94,8 +94,12 @@ describe("TegroDEX", function () {
 
         const updatedBaseTokenBalance = await baseToken.balanceOf(addr1.address);
         const updatedQuoteTokenBalance = await quoteToken.balanceOf(addr2.address);
-        expect(updatedBaseTokenBalance).to.equal(quantity);
-        expect(updatedQuoteTokenBalance).to.equal(totalPrice);
+        const baseFeeBalance = await baseToken.balanceOf(owner.address);
+        const quoteFeeBalance = await quoteToken.balanceOf(owner.address);
+        expect(updatedBaseTokenBalance).to.equal(Math.round(quantity - (quantity * (feeBps / 10000))));
+        expect(updatedQuoteTokenBalance).to.equal(Math.round(totalPrice - (totalPrice * (feeBps / 10000))));
+        expect(baseFeeBalance).to.equal(Math.round(quantity * (feeBps / 10000)));
+        expect(quoteFeeBalance).to.equal(Math.round(totalPrice * (feeBps / 10000)));
     });
 
     it("should settle partial fill orders correctly", async function () {
@@ -123,8 +127,12 @@ describe("TegroDEX", function () {
         
         const updatedBaseTokenBalance = await baseToken.balanceOf(addr1.address);
         const updatedQuoteTokenBalance = await quoteToken.balanceOf(addr2.address);
-        expect(updatedBaseTokenBalance).to.equal(quantity);
-        expect(updatedQuoteTokenBalance).to.equal(totalPrice);
+        const baseFeeBalance = await baseToken.balanceOf(owner.address);
+        const quoteFeeBalance = await quoteToken.balanceOf(owner.address);
+        expect(updatedBaseTokenBalance).to.equal(Math.round(quantity - (quantity * (feeBps / 10000))));
+        expect(updatedQuoteTokenBalance).to.equal(Math.round(totalPrice - (totalPrice * (feeBps / 10000))));
+        expect(baseFeeBalance).to.equal(Math.round(quantity * (feeBps / 10000)));
+        expect(quoteFeeBalance).to.equal(Math.round(totalPrice * (feeBps / 10000)));
     });
 
     it("should reject settlement with non-matching base/quote tokens", async function () {
