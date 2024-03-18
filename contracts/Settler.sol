@@ -30,7 +30,8 @@ contract TegroDEXSettlement is Initializable, OwnableUpgradeable {
     ITradingContract public tradingContract;
     event TradeFailed(
         bytes32 indexed buyOrderHash,
-        bytes32 indexed sellOrderHash
+        bytes32 indexed sellOrderHash,
+        uint256 matchingAmount
     );
 
     function initialize(
@@ -64,7 +65,8 @@ contract TegroDEXSettlement is Initializable, OwnableUpgradeable {
             {} catch (bytes memory) {
                 emit TradeFailed(
                     tradingContract.hashOrder(buyOrders[i]),
-                    tradingContract.hashOrder(sellOrders[i])
+                    tradingContract.hashOrder(sellOrders[i]),
+                    matchingAmounts[i]
                 );
             }
         }

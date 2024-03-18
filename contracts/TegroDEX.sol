@@ -46,7 +46,7 @@ contract TegroDEX is
         address maker; //Address of the maker
     }
 
-    event OrderSettled(
+    event TradeSettled(
         address baseToken,
         address quoteToken,
         uint256 price,
@@ -232,7 +232,7 @@ contract TegroDEX is
             totalPrice - quoteFeeAmount
         );
 
-        emit OrderSettled(
+        emit TradeSettled(
             buyOrder.baseToken,
             buyOrder.quoteToken,
             matchedPrice,
