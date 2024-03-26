@@ -9,10 +9,14 @@ module.exports = {
   sourcify: {
     enabled: false
   },
+  settings: {
+    viaIR: true
+  },
   etherscan: {
     apiKey: {
       polygonMumbai: process.env.POLYGONSCAN_API_KEY,
-      optimismSepolia: process.env.SEPOLIA_API_KEY
+      optimismSepolia: process.env.SEPOLIA_API_KEY,
+      arbitrumOne: process.env.ARBITRUM_ONE_API_KEY
     },
     customChains: [
       {
@@ -37,6 +41,10 @@ module.exports = {
     },
     shardeum_test: {
       url: 'https://sphinx.shardeum.org/',
+      accounts: [process.env.PRIVATE_KEY]
+    },
+    arbitrumOne: {
+      url: process.env.ARBITRUM_ONE_ALCHEMY_URL,
       accounts: [process.env.PRIVATE_KEY]
     }
   }

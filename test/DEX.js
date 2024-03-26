@@ -5,14 +5,18 @@ describe("TegroDEX", function () {
     let Token, baseToken, quoteToken;
     let TegroDEX, TegroDEXContract;
     let owner, addr1, addr2;
-    let network;
-    const baseDecimals = 2;
-    const quoteDecimals = 4;
+    let baseDecimals;
+    let quoteDecimals;
     const feeBps = 20;
 
     beforeEach(async function () {
         // Deploy an ERC20 token for testing
         Token = await ethers.getContractFactory("TokenFactory");
+        baseDecimals = getRandomInt(1, 6);
+        quoteDecimals = getRandomInt(1, 12);
+        console.log("Base Decimals: " + baseDecimals);
+        console.log("Quote Decimals: " + quoteDecimals);
+
         baseToken = await Token.deploy("BaseToken", "BASE", baseDecimals);
         quoteToken = await Token.deploy("QuoteToken", "QUOTE", quoteDecimals);
 
@@ -21,8 +25,14 @@ describe("TegroDEX", function () {
         [owner, addr1, addr2] = await ethers.getSigners();
         TegroDEXContract = await TegroDEX.deploy();
         TegroDEXContract.initialize(owner.address, feeBps);
-        network = await ethers.getDefaultProvider().getNetwork();
     });
+
+    function getRandomInt(min, max) {
+        const minCeiled = Math.ceil(min);
+        const maxFloored = Math.floor(max);
+        return Math.floor(Math.random() * (maxFloored - minCeiled) + minCeiled); // The maximum is exclusive and the minimum is inclusive
+    }
+
 
     async function placeOrder(_makerToken, _takerToken, _isBuy, _price, _totalQuantity, _wallet) {
         rawOrder =
@@ -71,13 +81,19 @@ describe("TegroDEX", function () {
         return randNum.toString();
     }
 
+    function getRandomArbitrary(min, max) {
+        return Math.floor(Math.random() * (max - min) + min);
+    }
 
     it("should settle full fill orders correctly", async function () {
-        const buyPrice = 1 * (10 ** quoteDecimals);
-        const quantity = 2 * (10 ** baseDecimals);
+        const buyPrice = Math.floor(getRandomArbitrary(1, 100) * (10 ** quoteDecimals));
+        const quantity = getRandomArbitrary(1, 10) * (10 ** baseDecimals);
 
-        const totalPrice = buyPrice * (quantity / 10 ** baseDecimals);
+        const totalPrice = Math.floor(buyPrice * (quantity / 10 ** baseDecimals));
 
+        console.log("Buy Price: " + buyPrice);
+        console.log("Total price: " + totalPrice);
+        console.log("Quantity: " + quantity);
         // Example to mint and approve tokens for trading
         await baseToken.mint(addr2.address, (quantity));
         await quoteToken.mint(addr1.address, totalPrice);
@@ -103,10 +119,14 @@ describe("TegroDEX", function () {
     });
 
     it("should settle partial fill orders correctly", async function () {
-        const buyPrice = 1 * (10 ** quoteDecimals);
-        const quantity = 2 * (10 ** baseDecimals);
+        const buyPrice = getRandomArbitrary(0.1, 1000) * (10 ** quoteDecimals);
+        const quantity = Math.floor(getRandomArbitrary(0.1, 1000) * (10 ** baseDecimals));
 
-        const totalPrice = buyPrice * (quantity / 10 ** baseDecimals);
+        const totalPrice = Math.floor(buyPrice * (quantity / 10 ** baseDecimals));
+
+        console.log("Buy Price: " + buyPrice);
+        console.log("Total price: " + totalPrice);
+        console.log("Quantity: " + quantity);
 
         // Example to mint and approve tokens for trading
         await baseToken.mint(addr2.address, (quantity));
@@ -114,17 +134,17 @@ describe("TegroDEX", function () {
 
         let domain = getDomain(TegroDEXContract.target);
         let buyOrder = await placeOrder(baseToken.target, quoteToken.target, true, buyPrice, quantity, addr1);
-        let sellOrder = await placeOrder(baseToken.target, quoteToken.target, false, buyPrice, quantity/2, addr2);
-        let sellOrder2 = await placeOrder(baseToken.target, quoteToken.target, false, buyPrice, quantity/2, addr2);
+        let sellOrder = await placeOrder(baseToken.target, quoteToken.target, false, buyPrice, quantity / 2, addr2);
+        let sellOrder2 = await placeOrder(baseToken.target, quoteToken.target, false, buyPrice, quantity / 2, addr2);
         let buySignature = await signOrder(addr1, buyOrder, domain);
         let sellSignature = await signOrder(addr2, sellOrder, domain);
         let sellSignature2 = await signOrder(addr2, sellOrder2, domain);
 
         await baseToken.connect(addr2).approve(TegroDEXContract.target, ethers.MaxUint256);
         await quoteToken.connect(addr1).approve(TegroDEXContract.target, ethers.MaxUint256);
-        const receipt = await (TegroDEXContract.settleOrders(buyOrder, buySignature, sellOrder, sellSignature, quantity/2));
-        const receipt2 = await (TegroDEXContract.settleOrders(buyOrder, buySignature, sellOrder2, sellSignature2, quantity/2));
-        
+        const receipt = await (TegroDEXContract.settleOrders(buyOrder, buySignature, sellOrder, sellSignature, quantity / 2));
+        const receipt2 = await (TegroDEXContract.settleOrders(buyOrder, buySignature, sellOrder2, sellSignature2, quantity / 2));
+
         const updatedBaseTokenBalance = await baseToken.balanceOf(addr1.address);
         const updatedQuoteTokenBalance = await quoteToken.balanceOf(addr2.address);
         const baseFeeBalance = await baseToken.balanceOf(owner.address);
@@ -138,6 +158,9 @@ describe("TegroDEX", function () {
     it("should reject settlement with non-matching base/quote tokens", async function () {
         const buyPrice = 1 * (10 ** quoteDecimals);
         const quantity = 2 * (10 ** baseDecimals);
+
+        console.log("Buy Price: " + buyPrice);
+        console.log("Quantity: " + quantity);
 
         // Create buy and sell orders with different base or quote tokens
         let buyOrder = await placeOrder(baseToken.target, quoteToken.target, true, buyPrice, quantity, addr1);
@@ -173,6 +196,9 @@ describe("TegroDEX", function () {
         const buyPrice = 1 * (10 ** quoteDecimals);
         const quantity = 2 * (10 ** baseDecimals);
 
+        console.log("Buy Price: " + buyPrice);
+        console.log("Quantity: " + quantity);
+
         // Create buy and sell orders with different base or quote tokens
         let buyOrder = await placeOrder(baseToken.target, quoteToken.target, true, buyPrice, quantity, addr1);
         let sellOrder = await placeOrder(baseToken.target, quoteToken.target, false, buyPrice, quantity, addr2);
@@ -190,6 +216,9 @@ describe("TegroDEX", function () {
         const buyPrice = 1 * (10 ** quoteDecimals);
         const quantity = 2 * (10 ** baseDecimals);
 
+        console.log("Buy Price: " + buyPrice);
+        console.log("Quantity: " + quantity);
+
         // Create buy and sell orders with different base or quote tokens
         let buyOrder1 = await placeOrder(baseToken.target, quoteToken.target, true, buyPrice, quantity, addr1);
         let buyOrder2 = await placeOrder(baseToken.target, quoteToken.target, true, buyPrice, quantity, addr2);
@@ -206,6 +235,9 @@ describe("TegroDEX", function () {
     it("should prevent refilling an already filled order", async function () {
         const buyPrice = 1 * (10 ** quoteDecimals);
         const quantity = 2 * (10 ** baseDecimals);
+
+        console.log("Buy Price: " + buyPrice);
+        console.log("Quantity: " + quantity);
 
         const totalPrice = buyPrice * (quantity / 10 ** baseDecimals);
 
@@ -236,6 +268,9 @@ describe("TegroDEX", function () {
     it("should prevent refilling an already filled order from a new order", async function () {
         const buyPrice = 1 * (10 ** quoteDecimals);
         const quantity = 2 * (10 ** baseDecimals);
+
+        console.log("Buy Price: " + buyPrice);
+        console.log("Quantity: " + quantity);
 
         const totalPrice = buyPrice * (quantity / 10 ** baseDecimals);
 

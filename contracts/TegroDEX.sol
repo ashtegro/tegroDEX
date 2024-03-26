@@ -249,35 +249,22 @@ contract TegroDEX is
         uint256 quantity,
         uint8 baseTokenDecimals
     ) internal pure returns (uint256) {
-        //First scale up the values to the highest decimals to ensure consistency in multiplication
-        uint16 higherDecimal = baseTokenDecimals >= quoteTokenDecimals
-            ? baseTokenDecimals
-            : quoteTokenDecimals;
-
-        if (baseTokenDecimals != higherDecimal) {
-            quantity = quantity * 10 ** (higherDecimal - baseTokenDecimals);
-        }
-
-        if (quoteTokenDecimals != higherDecimal) {
-            price = price * 10 ** (higherDecimal - quoteTokenDecimals);
-        }
-
-        uint256 totalPrice = price * quantity;
-
-        //Scale down the total price value to quote token's decimals
-        if (quoteTokenDecimals != higherDecimal) {
-            totalPrice =
-                totalPrice /
-                10 ** (higherDecimal + quoteTokenDecimals);
-        }
-
-        if (baseTokenDecimals != higherDecimal) {
-            totalPrice = totalPrice / 10 ** (higherDecimal);
+        uint256 adjustedQuantity;
+        if (baseTokenDecimals > quoteTokenDecimals) {
+            adjustedQuantity =
+                quantity /
+                (10 ** (baseTokenDecimals - quoteTokenDecimals));
+        } else if (quoteTokenDecimals > baseTokenDecimals) {
+            adjustedQuantity =
+                quantity *
+                (10 ** (quoteTokenDecimals - baseTokenDecimals));
         } else {
-            totalPrice = totalPrice / 10 ** (quoteTokenDecimals);
+            adjustedQuantity = quantity;
         }
 
-        return totalPrice;
+        uint256 totalPrice = price * adjustedQuantity;
+
+        return totalPrice / (10 ** quoteTokenDecimals);
     }
 
     function setFeeRecipient(address _feeRecipient) external onlyOwner {

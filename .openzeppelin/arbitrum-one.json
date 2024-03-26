@@ -2,248 +2,20 @@
   "manifestVersion": "3.2",
   "proxies": [
     {
-      "address": "0x72604CEd156B276Bcf12389136f5E82645Ad1d0d",
-      "txHash": "0x29593b629e1e444b001f630931279633301b61efe7ed0e1fd4339e9b4153b777",
+      "address": "0x34cA94e5aC475238827363f66C065fB54b0dB416",
+      "txHash": "0xbe8bd580f8e59992225b4c0beefac425f637d0f2ec8a600e7ecbd0329ace22fe",
       "kind": "transparent"
     },
     {
-      "address": "0x283BDe4e6a693434643D1376842D37415971B729",
-      "txHash": "0xf4825267d530d0be0fd5af8521baaf5f42b5621c4b5063bd6c98bf11f6d86525",
-      "kind": "transparent"
-    },
-    {
-      "address": "0x891bd52D241b4176d20AF79C51ae5d9015A58862",
-      "txHash": "0x1c8d051664b2a72cc2e7342b5d51efab7de6a22d187ad55a219b3ecac79ec904",
-      "kind": "transparent"
-    },
-    {
-      "address": "0x98313e58a3e56f8462d1947B9e7e7Af14877f692",
-      "txHash": "0x8be746d0e8657f97e4e110c85991074999a009e1fb72fd2944a0ad67cd9e3d1a",
-      "kind": "transparent"
-    },
-    {
-      "address": "0xAdD8140FE002f0A1f8CC6102519549F309731758",
-      "txHash": "0x3f7a54fbeaca13f395ff553b1f2edd4319d9894eb066a822702b21f826acad8e",
+      "address": "0xA45e62e64F8A59726Aa91D0fB6c5B85B00c454A7",
+      "txHash": "0x50d571ab8a2128065920281e8bffcf844988e8c22ff18adbdebf87f50a22e587",
       "kind": "transparent"
     }
   ],
   "impls": {
-    "2a1c59085d0e9b9591fb4ed2092289bf10a9e82665cb836a01406b896a4258be": {
-      "address": "0xe392A0C6bf5e44CA4D86C39ab4698Cc5ecD6F7ad",
-      "txHash": "0x12137068c3d1b964c5dc86d832dbd7dd1c8d9501b6a219db60f6b661508eee78",
-      "layout": {
-        "solcVersion": "0.8.22",
-        "storage": [
-          {
-            "label": "remaining",
-            "offset": 0,
-            "slot": "0",
-            "type": "t_mapping(t_bytes32,t_uint256)",
-            "contract": "TegroDEX",
-            "src": "contracts/TegroDEX.sol:33"
-          },
-          {
-            "label": "feeAmount",
-            "offset": 0,
-            "slot": "1",
-            "type": "t_uint16",
-            "contract": "TegroDEX",
-            "src": "contracts/TegroDEX.sol:60"
-          },
-          {
-            "label": "feeRecipient",
-            "offset": 2,
-            "slot": "1",
-            "type": "t_address",
-            "contract": "TegroDEX",
-            "src": "contracts/TegroDEX.sol:61"
-          }
-        ],
-        "types": {
-          "t_address": {
-            "label": "address",
-            "numberOfBytes": "20"
-          },
-          "t_bool": {
-            "label": "bool",
-            "numberOfBytes": "1"
-          },
-          "t_bytes32": {
-            "label": "bytes32",
-            "numberOfBytes": "32"
-          },
-          "t_string_storage": {
-            "label": "string",
-            "numberOfBytes": "32"
-          },
-          "t_struct(EIP712Storage)188_storage": {
-            "label": "struct EIP712Upgradeable.EIP712Storage",
-            "members": [
-              {
-                "label": "_hashedName",
-                "type": "t_bytes32",
-                "offset": 0,
-                "slot": "0"
-              },
-              {
-                "label": "_hashedVersion",
-                "type": "t_bytes32",
-                "offset": 0,
-                "slot": "1"
-              },
-              {
-                "label": "_name",
-                "type": "t_string_storage",
-                "offset": 0,
-                "slot": "2"
-              },
-              {
-                "label": "_version",
-                "type": "t_string_storage",
-                "offset": 0,
-                "slot": "3"
-              }
-            ],
-            "numberOfBytes": "128"
-          },
-          "t_struct(InitializableStorage)64_storage": {
-            "label": "struct Initializable.InitializableStorage",
-            "members": [
-              {
-                "label": "_initialized",
-                "type": "t_uint64",
-                "offset": 0,
-                "slot": "0"
-              },
-              {
-                "label": "_initializing",
-                "type": "t_bool",
-                "offset": 8,
-                "slot": "0"
-              }
-            ],
-            "numberOfBytes": "32"
-          },
-          "t_struct(OwnableStorage)14_storage": {
-            "label": "struct OwnableUpgradeable.OwnableStorage",
-            "members": [
-              {
-                "label": "_owner",
-                "type": "t_address",
-                "offset": 0,
-                "slot": "0"
-              }
-            ],
-            "numberOfBytes": "32"
-          },
-          "t_struct(ReentrancyGuardStorage)136_storage": {
-            "label": "struct ReentrancyGuardUpgradeable.ReentrancyGuardStorage",
-            "members": [
-              {
-                "label": "_status",
-                "type": "t_uint256",
-                "offset": 0,
-                "slot": "0"
-              }
-            ],
-            "numberOfBytes": "32"
-          },
-          "t_uint256": {
-            "label": "uint256",
-            "numberOfBytes": "32"
-          },
-          "t_uint64": {
-            "label": "uint64",
-            "numberOfBytes": "8"
-          },
-          "t_mapping(t_bytes32,t_uint256)": {
-            "label": "mapping(bytes32 => uint256)",
-            "numberOfBytes": "32"
-          },
-          "t_uint16": {
-            "label": "uint16",
-            "numberOfBytes": "2"
-          }
-        },
-        "namespaces": {
-          "erc7201:openzeppelin.storage.ReentrancyGuard": [
-            {
-              "contract": "ReentrancyGuardUpgradeable",
-              "label": "_status",
-              "type": "t_uint256",
-              "src": "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol:40",
-              "offset": 0,
-              "slot": "0"
-            }
-          ],
-          "erc7201:openzeppelin.storage.EIP712": [
-            {
-              "contract": "EIP712Upgradeable",
-              "label": "_hashedName",
-              "type": "t_bytes32",
-              "src": "@openzeppelin/contracts-upgradeable/utils/cryptography/EIP712Upgradeable.sol:39",
-              "offset": 0,
-              "slot": "0"
-            },
-            {
-              "contract": "EIP712Upgradeable",
-              "label": "_hashedVersion",
-              "type": "t_bytes32",
-              "src": "@openzeppelin/contracts-upgradeable/utils/cryptography/EIP712Upgradeable.sol:41",
-              "offset": 0,
-              "slot": "1"
-            },
-            {
-              "contract": "EIP712Upgradeable",
-              "label": "_name",
-              "type": "t_string_storage",
-              "src": "@openzeppelin/contracts-upgradeable/utils/cryptography/EIP712Upgradeable.sol:43",
-              "offset": 0,
-              "slot": "2"
-            },
-            {
-              "contract": "EIP712Upgradeable",
-              "label": "_version",
-              "type": "t_string_storage",
-              "src": "@openzeppelin/contracts-upgradeable/utils/cryptography/EIP712Upgradeable.sol:44",
-              "offset": 0,
-              "slot": "3"
-            }
-          ],
-          "erc7201:openzeppelin.storage.Ownable": [
-            {
-              "contract": "OwnableUpgradeable",
-              "label": "_owner",
-              "type": "t_address",
-              "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:24",
-              "offset": 0,
-              "slot": "0"
-            }
-          ],
-          "erc7201:openzeppelin.storage.Initializable": [
-            {
-              "contract": "Initializable",
-              "label": "_initialized",
-              "type": "t_uint64",
-              "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:69",
-              "offset": 0,
-              "slot": "0"
-            },
-            {
-              "contract": "Initializable",
-              "label": "_initializing",
-              "type": "t_bool",
-              "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:73",
-              "offset": 8,
-              "slot": "0"
-            }
-          ]
-        }
-      }
-    },
     "a6c11a61bb74058478f934a82bc6fef51b0aad80af408869bd5fc239fe96eca3": {
-      "address": "0x0FE268745609b5852BA1fCD2ca642FAaa4392692",
-      "txHash": "0x21b93307e8d960968980bf366d11317520897b78e6eb8618436635de5a90944c",
+      "address": "0xAd878774A4D14970B554f5Ad0C3989602C5720C9",
+      "txHash": "0x7e807c41ba67f6e70e2b8d5be24c3f7e052b82f28209b0ab52e160e0b12d5f93",
       "layout": {
         "solcVersion": "0.8.22",
         "storage": [
@@ -455,8 +227,8 @@
       }
     },
     "ba3c322825aea98e71b61c40bb633bb0eee307a83503ce7f785cb4b317b6e082": {
-      "address": "0xe02C87F61248Fd748af856cCF5388d5FBF32f916",
-      "txHash": "0xdd1382a9936129652947b1c7eb8034d51267182f042f05ef2442ab65b806ac09",
+      "address": "0xB7d89D4C3BebB9D72C1bb86e922aFb9b4ca3B581",
+      "txHash": "0x3d7ff9c065dde4cde9e4aee5f871a31f4262358f229316b7b7883088808b9f47",
       "layout": {
         "solcVersion": "0.8.22",
         "storage": [
